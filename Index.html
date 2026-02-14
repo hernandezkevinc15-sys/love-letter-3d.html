@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartita de Amor 3D para Jennifer</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const hearts = [];
+        const particleCount = 500;
+        const particles = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = (Math.random() - 0.5) * 50;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 50;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 50;
+        }
+
+        particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMaterial = new THREE.PointsMaterial({ color: 0xff69b4, size: 0.1 });
+        const particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+
+        const heartGeometry = new THREE.ShapeGeometry(new THREE.Shape()
+            .moveTo(0, 0)
+            .bezierCurveTo(0, 1, 1, 1, 1, 0)
+            .bezierCurveTo(1, -1, 0, -1, 0, 0)
+        );
+
+        for (let i = 0; i < 10; i++) {
+            const heartMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const heartMesh = new THREE.Mesh(heartGeometry, heartMaterial);
+            heartMesh.position.set((Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50);
+            scene.add(heartMesh);
+            hearts.push(heartMesh);
+        }
+
+        camera.position.z = 100;
+
+        const animate = function () {
+            requestAnimationFrame(animate);
+            hearts.forEach((heart, index) => {
+                heart.position.y += (Math.random() - 0.5) * 0.1;
+                heart.position.z += (Math.random() - 0.5) * 0.1;
+            });
+            particleSystem.rotation.x += 0.01;
+            particleSystem.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        };
+
+        animate();
+    </script>
+    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); color: white; font-size: 2em;">
+        ¡Te amo, Jennifer!
+    </div>
+</body>
+</html>
